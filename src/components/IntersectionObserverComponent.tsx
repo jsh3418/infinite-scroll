@@ -1,32 +1,20 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
 
 type Props = {
   callback: () => void;
 };
 
 export const IntersectionObserverComponent = ({ callback }: Props) => {
-  const observerRef = useRef(null);
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!observerRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            callback();
-          }
-        });
-      },
-      {
-        rootMargin: "200px 0px",
-      }
-    );
-
-    observer.observe(observerRef.current);
-
-    return () => observer.disconnect();
-  }, [observerRef, callback]);
+  useIntersectionObserver({
+    observerRef,
+    callback,
+    intersectionObserverInit: {
+      rootMargin: "200px 0px",
+    },
+  });
 
   return <div style={{ width: "1px", height: "1px" }} ref={observerRef} />;
 };
